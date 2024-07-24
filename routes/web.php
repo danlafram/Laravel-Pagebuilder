@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use HansSchouten\LaravelPageBuilder\LaravelPageBuilder;
+use Illuminate\Support\Facades\Log;
 
 // handle pagebuilder asset requests
 Route::any( config('pagebuilder.general.assets_url') . '{any}', function() {
-
     $builder = new LaravelPageBuilder(config('pagebuilder'));
     $builder->handlePageBuilderAssetRequest();
 
@@ -14,7 +14,7 @@ Route::any( config('pagebuilder.general.assets_url') . '{any}', function() {
 
 // handle requests to retrieve uploaded file
 Route::any( config('pagebuilder.general.uploads_url') . '{any}', function() {
-
+    Log::info("Starting request for uploaded file");
     $builder = new LaravelPageBuilder(config('pagebuilder'));
     $builder->handleUploadedFileRequest();
 
@@ -38,7 +38,7 @@ if (config('pagebuilder.router.use_router')) {
 
     // pass all remaining requests to the LaravelPageBuilder router
     Route::any( '/{any}', function() {
-
+        Log::info("Made it here");
         $builder = new LaravelPageBuilder(config('pagebuilder'));
         $hasPageReturned = $builder->handlePublicRequest();
 
