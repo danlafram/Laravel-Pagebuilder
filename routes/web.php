@@ -14,10 +14,8 @@ Route::any( config('pagebuilder.general.assets_url') . '{any}', function() {
 
 // handle requests to retrieve uploaded file
 Route::any( config('pagebuilder.general.uploads_url') . '{any}', function() {
-    Log::info("Starting request for uploaded file");
     $builder = new LaravelPageBuilder(config('pagebuilder'));
     $builder->handleUploadedFileRequest();
-
 })->where('any', '.*');
 
 
