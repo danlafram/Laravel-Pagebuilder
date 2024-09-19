@@ -36,7 +36,6 @@ if (config('pagebuilder.router.use_router')) {
 
     // pass all remaining requests to the LaravelPageBuilder router
     Route::any( '/{any}', function() {
-        Log::info("Made it here");
         $builder = new LaravelPageBuilder(config('pagebuilder'));
         $hasPageReturned = $builder->handlePublicRequest();
 
