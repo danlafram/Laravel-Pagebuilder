@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use HansSchouten\LaravelPageBuilder\LaravelPageBuilder;
-use Illuminate\Support\Facades\Log;
+
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 // handle pagebuilder asset requests
 Route::any( config('pagebuilder.general.assets_url') . '{any}', function() {
@@ -13,10 +15,20 @@ Route::any( config('pagebuilder.general.assets_url') . '{any}', function() {
 
 
 // handle requests to retrieve uploaded file
-Route::any( config('pagebuilder.general.uploads_url') . '{any}', function() {
-    $builder = new LaravelPageBuilder(config('pagebuilder'));
-    $builder->handleUploadedFileRequest();
-})->where('any', '.*');
+Route::middleware([
+    'web',
+    InitializeTenancyByDomain::class,
+    PreventAccessFromCentralDomains::class,
+])->group(function () {
+    Route::any( config('pagebuilder.general.uploads_url') . '{any}', function() {
+        $builder = new LaravelPageBuilder(config('pagebuilder'));
+        logger('handling uploaded file request');
+        // logger('tenant: ' . tenant()->getTenantKey());
+        logger("storage_path in web.php: " . storage_path());
+        $builder->handleUploadedFileRequest();
+    })->where('any', '.*');
+});
+
 
 
 if (config('pagebuilder.website_manager.use_website_manager')) {
